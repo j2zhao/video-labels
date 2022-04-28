@@ -6,6 +6,12 @@ import cv2
 import numpy as np
 import os
 
+def img_size(label, img_dir):
+    name = label['name']
+    dire = os.path.join(img_dir, name)
+    img = cv2.imread(dire)
+    return img.shape
+
 def avg_bb_wrapper(funct):
     """
     wrapper function that finds the image attribute for bbox
@@ -44,4 +50,5 @@ def img_edges(img, edges = False,edge_low = 100, edge_high = 200 ):
     # average color with edges should be approximately how many edges there are relative to size
     color = np.mean(edges)
     return color
+
 
