@@ -9,7 +9,7 @@ Visualize KPI in order to help us define the values
 
 import matplotlib.pyplot as plt
 
-def metric(flabels):
+def metric_funct(flabels):
     """
     metric for discontinuity analysis
     """
@@ -89,7 +89,8 @@ def find_breaks(labels, metric, arange = 5, max_min = 0, diff = 0.5):
 
     return breaks
 
-def display_kpi(labels, video, total, arange, max_min, start_frame, kpi_funct):
+def display_kpi(labels, video, start_frame, kpi_funct, attribute, arange = 5, max_min = 0,  ):
+    total = arange*2 + max_min
     end_frame = start_frame + total
     Y = []
     for i in range(start_frame, end_frame, 1):

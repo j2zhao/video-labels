@@ -19,13 +19,18 @@ class LabelManager(object):
         self.video_num = len(self.videos)
         self.frames_num = 0
         self.bb_num = defaultdict(int)
+
+        self.label_sizes = {'tp':0 , 'fn': 0, 'fp': 0}
         for video in self.videos:
             for i in range(len(self.labels[video])):
                 self.frames_num += 1
                 for type in self.labels[video][i]:
                     for j in range(len(self.labels[video][i][type])):
+                        self.label_sizes[type] += 1
                         self.bb_num[type] += 1
-                        self.labels[video][i][type][j]["error"] = {}
+                        self.labels[video][i][type][j]["error"] = []
+
+        
     
     def add_attribute(self, name, funct):
         """
@@ -37,20 +42,27 @@ class LabelManager(object):
                     for j in range(len(self.labels[video][i][type])):
                         self.labels[video][i][type][j][name] = funct(self.labels[video][i][type][j], self.dire)
 
-    def eval_error(self, name, funct):
+    def eval_error(self, name, funct, all = False):
         """
         Returns number of attribute match for each type of bbox
         """
         errors = defaultdict(int)
+        label_sizes = defaultdict(int)
+        
         for video in self.videos:
             for i in range(len(self.labels[video])):
                 for type in self.labels[video][i]:
                     for j in range(len(self.labels[video][i][type])):
-                        self.labels[video][i][type][j]['error'][name] = funct(self.labels[video][i][type][j])
-                        if self.labels[video][i][type][j]['error'][name] == True:
+                        if not all and len(self.labels[video][i][type][j]['error']) != 0:
+                            continue
+                        
+                        label_sizes[type] += 1
+                        error = funct(self.labels[video][i][type][j])
+                        if error:
                             errors[type] += 1
+                            self.labels[video][i][type][j]['error'].append(name) 
         
-        return errors
+        return errors, label_sizes
                             
     def remove_error(self, name):
         pass
@@ -72,3 +84,13 @@ class LabelManager(object):
 
                 no_errors.video.append(flabels)
         return no_errors
+
+    def get_metric(self, metric_funct):
+        metrics = {}
+        for video in self.videos:
+            metrics[video] = []
+            for i in range(len(self.labels[video])):
+                m = metric_funct(self.labels[video][i])
+                metrics[video].append(m)
+        
+        return metrics        
