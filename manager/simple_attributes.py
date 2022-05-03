@@ -2,6 +2,7 @@
 Simple image attributes 
 """
 
+from xml import dom
 import cv2
 import numpy as np
 import os
@@ -36,7 +37,7 @@ def img_dcolors(img, n_colors = 3):
     _, labels, palette = cv2.kmeans(pixels, n_colors, None, criteria, 10, flags)
     _, counts = np.unique(labels, return_counts=True)
     dominant = palette[np.argmax(counts)]
-
+    return dominant
 
 def img_lumin(img):
     img = cv2.cvtColor(img, 40) # code: COLOR_BGR2HSV
