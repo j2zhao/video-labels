@@ -7,6 +7,7 @@ Visualize KPI in order to help us define the values
 """
 
 
+from attr import attr
 import matplotlib.pyplot as plt
 
 def metric_funct(flabels):
@@ -94,7 +95,7 @@ def display_kpi(labels, video, start_frame, kpi_funct, attribute, arange = 5, ma
     end_frame = start_frame + total
     Y = []
     for i in range(start_frame, end_frame, 1):
-        kpi = kpi_funct(labels[video][i])
+        kpi = kpi_funct(labels[video][i], attribute)
         Y.append(kpi)
     plt.scatter(list(range(len(Y))), Y)
     plt.axvline(x=arange)
