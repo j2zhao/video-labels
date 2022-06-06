@@ -63,7 +63,7 @@ class LabelManager(object):
                             self.labels[video][i][type][j]['error'].append(name) 
         
         return errors, label_sizes
-                            
+
     def remove_error(self, name):
         pass
     

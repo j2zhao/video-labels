@@ -21,7 +21,7 @@ def avg_bb_wrapper(funct):
         name = label['name']
         dire = os.path.join(img_dir, name)
         img = cv2.imread(dire)
-        bbox = img[label['bbox']['x1']: label['bbox']['x2'], label['bbox']['y1']: label['bbox']['y2']]
+        bbox = img[int(label['bbox']['x1']):int(label['bbox']['x2']), int(label['bbox']['y1']):int(label['bbox']['y2'])]
         value = funct(bbox)
         return value
     return img_funct
@@ -40,6 +40,8 @@ def img_dcolors(img, n_colors = 3):
     return dominant
 
 def img_lumin(img):
+    if 0 in img.shape:
+        return 0
     img = cv2.cvtColor(img, 40) # code: COLOR_BGR2HSV
     color = np.mean(np.mean(img, axis=0), axis=0)
     return color[2] # should be values in hsv
@@ -49,6 +51,8 @@ def img_edges(img, edges = False,edge_low = 100, edge_high = 200 ):
     # to be more general (https://docs.opencv.org/3.4/dd/d1a/group__imgproc__feature.html#ga2a671611e104c093843d7b7fc46d24af)
     edges = cv2.Canny(img,edge_low,edge_high) 
     # average color with edges should be approximately how many edges there are relative to size
+    if edges is None:
+        return 0
     color = np.mean(edges)
     return color
 

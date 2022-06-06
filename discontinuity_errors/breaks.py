@@ -35,6 +35,8 @@ def avg_kpi(flabels, attribute, types = None):
         types = flabels.keys()
     for type in types:
         for i in range(len(flabels)):
+            if i not in flabels[type]:
+                continue
             kpi += flabels[type][i][attribute]
             num +=1
 

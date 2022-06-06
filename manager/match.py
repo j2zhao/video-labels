@@ -18,8 +18,8 @@ def get_iou(bb1, bb2):
     intersection_area = (x_right - x_left) * (y_bottom - y_top)
 
     # compute the area of both AABBs
-    bb1_area = (bb1[2] - bb1[0]) * (bb1[3] - bb1[1])
-    bb2_area = (bb2[2] - bb2[0]) * (bb2[3] - bb2[1])
+    bb1_area = (bb1['x2'] - bb1['x1']) * (bb1['y2'] - bb1['y1'])
+    bb2_area = (bb2['x2'] - bb2['x1']) * (bb2['y2'] - bb2['y1'])
 
     # compute the intersection over union by taking the intersection
     # area and dividing it by the sum of prediction + ground-truth
@@ -27,20 +27,20 @@ def get_iou(bb1, bb2):
     iou = intersection_area / float(bb1_area + bb2_area - intersection_area)
     return iou
 
-def match_object(true_labels, model_labels, iou = 0.8, obj = "cars"):
+def match_object(true_labels, model_labels, iou = 0.8, obj = "car"):
     """
     divide labels into: true positive, false positive, false negative
     """
     labels = {}
     for video in true_labels:
-        labels[video] = []
-        keys = set(true_labels[video].keys())
-        keys = keys.union(set(model_labels[video].keys()))
-        max_key = 0
-        for key in keys:
-            if key > max_key:
-                max_key = key
-        for i in range(max_key):
+        labels[video] = []      
+#         keys = set(true_labels[video].keys())
+#         keys = keys.union(set(model_labels[video].keys()))
+#         max_key = 0
+#         for key in keys:
+#             if key > max_key:
+#                 max_key = key
+        for i in range(max(len(true_labels[video]), len(model_labels[video]))):
             flabels = {'tp': [], 'fn': [], 'fp': []}
             if i in true_labels[video] and i not in model_labels[video]:
                 for label in true_labels[video][i]['labels']:

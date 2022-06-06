@@ -55,6 +55,7 @@ def define_shape_error(min_width = None, max_width = None, min_length= None, max
             img_size = None
         error = True
 
+        nonlocal min_width, max_width, min_length, max_length
         if min_width != None:
             if min_width <= 1 and img_size == None:
                 raise ValueError("Can't use percentage without image size")
