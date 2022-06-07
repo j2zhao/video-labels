@@ -17,18 +17,23 @@ def avg_bb_wrapper(funct):
     """
     wrapper function that finds the image attribute for bbox
     """
-    def img_funct(label, img_dir):
-        name = label['name']
-        dire = os.path.join(img_dir, name)
-        img = cv2.imread(dire)
+    def img_funct(label, img):
         bbox = img[int(label['bbox']['x1']):int(label['bbox']['x2']), int(label['bbox']['y1']):int(label['bbox']['y2'])]
         value = funct(bbox)
         return value
     return img_funct
 
-def img_color(img):
+def img_color_r(img):
     color = np.mean(np.mean(img, axis=0), axis=0)
-    return color
+    return color[0]
+
+def img_color_g(img):
+    color = np.mean(np.mean(img, axis=0), axis=0)
+    return color[1]
+
+def img_color_b(img):
+    color = np.mean(np.mean(img, axis=0), axis=0)
+    return color[2]
 
 def img_dcolors(img, n_colors = 3):
     pixels = np.float32(img.reshape(-1, 3))

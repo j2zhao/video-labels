@@ -33,16 +33,20 @@ def match_object(true_labels, model_labels, iou = 0.8, obj = "car"):
     """
     labels = {}
     for video in true_labels:
-        labels[video] = []      
-#         keys = set(true_labels[video].keys())
-#         keys = keys.union(set(model_labels[video].keys()))
-#         max_key = 0
-#         for key in keys:
-#             if key > max_key:
-#                 max_key = key
-        for i in range(max(len(true_labels[video]), len(model_labels[video]))):
+        labels[video] = [] 
+        # TODO: Change testing to match this format  
+        keys = set(true_labels[video].keys())
+        keys = keys.union(set(model_labels[video].keys()))
+        max_key = 0
+        for key in keys:
+            if key > max_key:
+                max_key = key
+
+        for i in range(max_key):
             flabels = {'tp': [], 'fn': [], 'fp': []}
-            if i in true_labels[video] and i not in model_labels[video]:
+            if i not in true_labels[video] and i not in model_labels[video]:
+                pass
+            elif i in true_labels[video] and i not in model_labels[video]:
                 for label in true_labels[video][i]['labels']:
                     if label["category"] != obj:
                         continue
@@ -102,7 +106,58 @@ def match_object(true_labels, model_labels, iou = 0.8, obj = "car"):
                     if j not in matched and label["category"] == obj:
                         lb = {'name': model_labels[video][i]['name'], 'bbox':label2['box2d'], 'category': label["category"]}
                         flabels['fp'].append(lb)
-
             labels[video].append(flabels)
+    return labels
 
+
+def match_object_virat(true_labels, model_labels, iou = 0.8):
+    """
+    divide labels into: true positive, false positive, false negative
+    """
+    labels = {}
+    for video in true_labels:
+        labels[video] = [] 
+        keys = set(true_labels[video].keys())
+        keys = keys.union(set(model_labels[video].keys()))
+        max_key = 0
+        for key in keys:
+            if key > max_key:
+                max_key = key
+        for i in range(max_key):
+            flabels = {'tp': [], 'fn': [], 'fp': []}
+            if i not in true_labels[video] and i not in model_labels[video]:
+                pass
+            elif i in true_labels[video] and i not in model_labels[video]:
+                for label in true_labels[video][i]:
+                    lb = {'name': video, 'bbox':{"x1":label[0] , "x2": label[2], "y1": label[1], "y2": label[3]}}
+                    flabels['fn'].append(lb)
+            elif i in model_labels[video] and i not in true_labels[video]:
+                for label in true_labels[video][i]:
+                    lb = {'name': video, 'bbox':{"x1":label[0] , "x2": label[2], "y1": label[1], "y2": label[3]}}
+                    flabels['fp'].append(lb)
+            else:
+                matched = []
+                for label in true_labels[video][i]:
+                    bbox1 = {"x1":label[0] , "x2": label[2], "y1": label[1], "y2": label[3]}
+                    temp = False
+                    lb = {'name': video, 'bbox':bbox1}
+                    for j, label2 in enumerate(model_labels[video][i]):
+                        if j in matched:
+                            continue
+                        bbox2 = {"x1":label2[0] , "x2": label2[2], "y1": label2[1], "y2": label2[3]}
+                        iou = get_iou(bbox1, bbox2)
+                        if iou > 0.8:
+                            temp = True
+                            lb['model_bbox'] = label2['box2d']
+                            flabels['tp'].append(lb)
+                            matched.append(j)
+                            break
+                    if not temp:
+                        flabels['fn'].append(lb)
+                for j, label2 in enumerate(model_labels[video][i]):
+                    if j not in matched:
+                        bbox2 = {"x1":label2[0] , "x2": label2[2], "y1": label2[1], "y2": label2[3]}
+                        lb = {'name': video, 'bbox':bbox2}
+                        flabels['fp'].append(lb)
+            labels[video].append(flabels)
     return labels
