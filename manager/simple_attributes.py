@@ -7,11 +7,18 @@ import cv2
 import numpy as np
 import os
 
-def img_size(label, img_dir):
+def img_width(label, img_dir):
     name = label['name']
     dire = os.path.join(img_dir, name)
     img = cv2.imread(dire)
-    return img.shape
+    return img.shape[0]
+
+def img_height(label, img_dir):
+    name = label['name']
+    dire = os.path.join(img_dir, name)
+    img = cv2.imread(dire)
+    return img.shape[0]
+
 
 def avg_bb_wrapper(funct):
     """
