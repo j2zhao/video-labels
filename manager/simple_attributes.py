@@ -17,7 +17,7 @@ def img_height(label, img_dir):
     name = label['name']
     dire = os.path.join(img_dir, name)
     img = cv2.imread(dire)
-    return img.shape[0]
+    return img.shape[1]
 
 
 def avg_bb_wrapper(funct):
